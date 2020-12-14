@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -76,9 +77,9 @@ float LinuxParser::MemoryUtilization() {
   double memAvailable{0};
   double buffers{0};
   float percentageUtilized{0};
-  std::ifstream filestream(kProcDirectory + kMeminfoFilename);
-  if (filestream.is_open()) {
-    while (std::getline(filestream, line)) {
+  std::ifstream fileStream(kProcDirectory + kMeminfoFilename);
+  if (fileStream.is_open()) {
+    while (std::getline(fileStream, line)) {
       std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream lineStream(line);
       lineStream >> key >> value;
@@ -108,8 +109,17 @@ float LinuxParser::MemoryUtilization() {
   return percentageUtilized;
 }
 
-// TODO: Read and return the system uptime
-long LinuxParser::UpTime() { return 0; }
+long LinuxParser::UpTime() {
+  long uptimeSeconds{0};
+  string line;
+  std::ifstream fileStream(kProcDirectory + kUptimeFilename);
+  if (fileStream.is_open()) {
+    std::getline(fileStream, line);
+    std::istringstream lineStream(line);
+    lineStream >> uptimeSeconds;
+  }
+  return uptimeSeconds;
+}
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return 0; }
