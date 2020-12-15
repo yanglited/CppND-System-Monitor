@@ -18,6 +18,11 @@ const std::string kVersionFilename{"/version"};
 const std::string kOSPath{"/etc/os-release"};
 const std::string kPasswordPath{"/etc/passwd"};
 
+// Conversion ratio chosen to be 1024 to get megabytes, according to
+// definitions:
+static constexpr int kMbToKbRatio = 1024;
+static constexpr int kIndexOfProcessUpTimeStamp = 22;
+
 // System
 float MemoryUtilization();
 long UpTime();

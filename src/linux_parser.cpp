@@ -1,6 +1,7 @@
 #include "linux_parser.h"
 
 #include <dirent.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include <iostream>
@@ -197,10 +198,11 @@ string LinuxParser::Command(int pid) {
   return line;
 }
 
-// TODO: Read and return the memory used by a process
+// TODO: Read and return the memory used by a process - double check after
+// sorting
 string LinuxParser::Ram(int pid) {
   string line, key;
-  int value;
+  int value{0};
   string filePath = processBaseFilePath(pid);
   filePath.append(kStatusFilename);
 
@@ -212,15 +214,11 @@ string LinuxParser::Ram(int pid) {
       lineStream >> key >> value;
 
       if (key == "VmSize") {
-        // Conversion ratio chosen to be 1024 to get megabytes, according to
-        // definitions:
-        return std::to_string(value / 1024);
+        return std::to_string(value / kMbToKbRatio);
       }
     }
 
-  }
-  else
-  {
+  } else {
     std::cerr << "Error opening file at " << filePath << "\n";
   }
   return string();
@@ -270,6 +268,32 @@ string LinuxParser::User(int pid) {
   return userName;
 }
 
-// TODO: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid [[maybe_unused]]) { return 0; }
+// TODO: Read and return the uptime of a process - double check after sorting
+long LinuxParser::UpTime(int pid) {
+  long upTimeValue{0};
+  string line;
+  std::vector<string> valueStrs(kIndexOfProcessUpTimeStamp);
+  string filePath = processBaseFilePath(pid);
+  filePath.append(kStatusFilename);
+
+  std::ifstream fileStream(filePath);
+  if (fileStream.is_open()) {
+    std::getline(fileStream, line);
+    std::istringstream lineStream(line);
+
+    for (auto& valueStr : valueStrs) {
+      lineStream >> valueStr;
+    }
+
+  } else {
+    std::cerr << "Error opening file at " << filePath << "\n";
+  }
+  const char* pUpTimeValueStr =
+      valueStrs[kIndexOfProcessUpTimeStamp - 1].c_str();
+  char* pUpTimeValueStrEnd;
+  upTimeValue =
+      UpTime() - std::strtol(pUpTimeValueStr, &pUpTimeValueStrEnd, 10) /
+                     sysconf(_SC_CLK_TCK);
+
+  return upTimeValue;
+}
