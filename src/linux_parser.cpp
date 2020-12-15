@@ -198,8 +198,33 @@ string LinuxParser::Command(int pid) {
 }
 
 // TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Ram(int pid [[maybe_unused]]) { return string(); }
+string LinuxParser::Ram(int pid) {
+  string line, key;
+  int value;
+  string filePath = processBaseFilePath(pid);
+  filePath.append(kStatusFilename);
+
+  std::ifstream fileStream(filePath);
+  if (fileStream.is_open()) {
+    while (std::getline(fileStream, line)) {
+      std::replace(line.begin(), line.end(), ':', ' ');
+      std::istringstream lineStream(line);
+      lineStream >> key >> value;
+
+      if (key == "VmSize") {
+        // Conversion ratio chosen to be 1024 to get megabytes, according to
+        // definitions:
+        return std::to_string(value / 1024);
+      }
+    }
+
+  }
+  else
+  {
+    std::cerr << "Error opening file at " << filePath << "\n";
+  }
+  return string();
+}
 
 string LinuxParser::Uid(int pid) {
   string line, key, value;
