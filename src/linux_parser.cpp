@@ -173,21 +173,77 @@ int LinuxParser::RunningProcesses() {
   return 0;
 }
 
-// TODO: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Command(int pid [[maybe_unused]]) { return string(); }
+string LinuxParser::processBaseFilePath(int pid) {
+  string filePath;
+  filePath.append(kProcDirectory);
+  //  filePath.append("/");
+  filePath.append(std::to_string(pid));
+
+  return filePath;
+}
+
+string LinuxParser::Command(int pid) {
+  string line;
+  string filePath = processBaseFilePath(pid);
+  filePath.append(kCmdlineFilename);
+
+  std::ifstream fileStream(filePath);
+  if (fileStream.is_open()) {
+    std::getline(fileStream, line);
+  } else {
+    std::cerr << "Could not open file at " << filePath << "\n";
+  }
+
+  return line;
+}
 
 // TODO: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Ram(int pid [[maybe_unused]]) { return string(); }
 
-// TODO: Read and return the user ID associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Uid(int pid [[maybe_unused]]) { return string(); }
+string LinuxParser::Uid(int pid) {
+  string line, key, value;
 
-// TODO: Read and return the user associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::User(int pid [[maybe_unused]]) { return string(); }
+  string baseFilePath = processBaseFilePath(pid);
+  string uidFilePath = baseFilePath.append(kStatusFilename);
+  std::ifstream uidFileStream(uidFilePath);
+  if (uidFileStream.is_open()) {
+    while (std::getline(uidFileStream, line)) {
+      std::istringstream lineStream(line);
+      lineStream >> key >> value;
+      if (key == "Uid:") {
+        break;
+      }
+    }
+  } else {
+    std::cerr << "Could not open file at " << uidFilePath << "\n";
+  }
+
+  return value;
+}
+
+string LinuxParser::User(int pid) {
+  string userName{"Undetermined"};
+  string uid = Uid(pid);
+
+  string line, uidInFile;
+  std::ifstream fileStream(kPasswordPath);
+  if (fileStream.is_open()) {
+    while (std::getline(fileStream, line)) {
+      std::replace(line.begin(), line.end(), ':', ' ');
+      std::replace(line.begin(), line.end(), 'x', ' ');
+      std::istringstream lineStream(line);
+      lineStream >> userName >> uidInFile;
+      if (uidInFile == uid) {
+        break;
+      }
+    }
+  } else {
+    std::cerr << "Could not open file at " << kPasswordPath << "\n";
+  }
+
+  return userName;
+}
 
 // TODO: Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
