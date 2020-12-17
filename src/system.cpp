@@ -3,11 +3,10 @@
 #include <unistd.h>
 
 #include <cstddef>
+#include <iostream>
 #include <set>
 #include <string>
 #include <vector>
-
-#include <iostream>
 
 #include "linux_parser.h"
 #include "process.h"
@@ -18,20 +17,20 @@ using std::size_t;
 using std::string;
 using std::vector;
 
-// TODO: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
-// TODO: Return a container composed of the system's processes
 vector<Process>& System::Processes() {
-  processes_.clear(); // TODO: is this really correct?
+  processes_.clear();
   vector<int> pids = LinuxParser::Pids();
-  for(auto const pid : pids)
-  {
+  for (auto const pid : pids) {
     Process process(pid);
     processes_.push_back(process);
   }
-  // TODO anything missing?
-  return processes_; }
+
+  std::sort(processes_.begin(), processes_.end(),
+            [](const Process& a, const Process& b) { return a > b; });
+  return processes_;
+}
 
 std::string System::Kernel() { return LinuxParser::Kernel(); }
 

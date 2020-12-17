@@ -1,9 +1,9 @@
 #include "linux_parser.h"
 
 #include <dirent.h>
-#include <stdlib.h>
 #include <unistd.h>
 
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -135,7 +135,6 @@ long LinuxParser::ActiveJiffies() { return 0; }
 // TODO: Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() { return 0; }
 
-
 vector<string> LinuxParser::CpuUtilization() {
   vector<string> retVec;
   string line, value;
@@ -158,6 +157,30 @@ vector<string> LinuxParser::CpuUtilization() {
     for (auto const& item : retVec) {
       std::cerr << item << "\n";
     }
+  }
+
+  return retVec;
+}
+
+vector<string> LinuxParser::CpuUtilization(int pid) {
+  std::vector<std::string> retVec;
+  string line, value;
+  std::string filePath = processBaseFilePath(pid);
+  filePath.append(kStatFilename);
+  std::ifstream fileStream(filePath);
+  if (fileStream.is_open()) {
+    std::getline(fileStream, line);
+    std::istringstream lineStream(line);
+    for (auto i = 0; i < 22; i++) {
+      lineStream >> value;
+      int index = i + 1;
+      if (index == 14 || index == 15 || index == 16 || index == 17 ||
+          index == 22) {
+        retVec.push_back(value);
+      }
+    }
+  } else {
+    std::cerr << "Error opening file at " << filePath << "\n";
   }
 
   return retVec;
