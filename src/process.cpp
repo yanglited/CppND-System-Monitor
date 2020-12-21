@@ -12,7 +12,9 @@
 
 int Process::Pid() const { return pid_; }
 
-float Process::CpuUtilization() {
+Process::Process(int pid) : pid_(pid), cpuUtilization_(CpuUtilization()) {}
+
+float Process::CpuUtilization() const {
   std::vector<std::string> strVec = LinuxParser::CpuUtilization(Pid());
   float utime_sec =
       std::stof(strVec[0]) / static_cast<float>(sysconf(_SC_CLK_TCK));
@@ -31,8 +33,8 @@ float Process::CpuUtilization() {
   float elapsed_time_sec =
       static_cast<float>(LinuxParser::UpTime()) - starttime_sec;
 
-  cpuUtilization_ = 100.0f * total_time_sec / elapsed_time_sec;
-  return cpuUtilization_;
+  float utilization = total_time_sec / elapsed_time_sec;
+  return utilization;
 }
 
 std::string Process::Command() const { return LinuxParser::Command(Pid()); }
@@ -44,5 +46,5 @@ std::string Process::User() const { return LinuxParser::User(Pid()); }
 long int Process::UpTime() const { return LinuxParser::UpTime(Pid()); }
 
 bool Process::operator>(Process const& a) const {
-  return cpuUtilization_ < a.cpuUtilization_;
+  return cpuUtilization_ > a.cpuUtilization_;
 }
