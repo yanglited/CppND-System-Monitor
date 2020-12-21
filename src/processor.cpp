@@ -30,14 +30,14 @@ CPU_Percentage = (totald - idled)/totald
 float Processor::Utilization() {
   std::vector<std::string> strVec = LinuxParser::CpuUtilization();
   if (strVec.size() == 10) {
-    float user_read = std::stof(strVec[0]);
-    float nice_read = std::stof(strVec[1]);
-    float system_read = std::stof(strVec[2]);
-    float idle_read = std::stof(strVec[3]);
-    float iowait_read = std::stof(strVec[4]);
-    float irq_read = std::stof(strVec[5]);
-    float softirq_read = std::stof(strVec[6]);
-    float steal_read = std::stof(strVec[7]);
+    float user_read = std::stof(strVec[LinuxParser::kUser_]);
+    float nice_read = std::stof(strVec[LinuxParser::kNice_]);
+    float system_read = std::stof(strVec[LinuxParser::kSystem_]);
+    float idle_read = std::stof(strVec[LinuxParser::kIdle_]);
+    float iowait_read = std::stof(strVec[LinuxParser::kIOwait_]);
+    float irq_read = std::stof(strVec[LinuxParser::kIRQ_]);
+    float softirq_read = std::stof(strVec[LinuxParser::kSoftIRQ_]);
+    float steal_read = std::stof(strVec[LinuxParser::kSteal_]);
 
     float idle = idle_read + iowait_read;
     float nonIdel = user_read + nice_read + system_read + irq_read +
