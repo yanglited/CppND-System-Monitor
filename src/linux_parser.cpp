@@ -310,7 +310,6 @@ string LinuxParser::User(int pid) {
 }
 
 long LinuxParser::UpTime(int pid) {
-  long upTimeValue{0};
   string line;
   std::vector<string> valueStrs(kIndexOfProcessUpTimeStamp);
   string filePath = processBaseFilePath(pid);
@@ -331,7 +330,7 @@ long LinuxParser::UpTime(int pid) {
   const char* pUpTimeValueStr =
       valueStrs[kIndexOfProcessUpTimeStamp - 1].c_str();
   char* pUpTimeValueStrEnd;
-  upTimeValue =
+  long upTimeValue =
       UpTime() - std::strtol(pUpTimeValueStr, &pUpTimeValueStrEnd, 10) /
                      sysconf(_SC_CLK_TCK);
 
