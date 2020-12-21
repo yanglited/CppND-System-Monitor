@@ -322,7 +322,7 @@ long LinuxParser::UpTime(int pid) {
   string line;
   std::vector<string> valueStrs(kIndexOfProcessUpTimeStamp);
   string filePath = processBaseFilePath(pid);
-  filePath.append(kStatusFilename);
+  filePath.append(kStatFilename);
 
   std::ifstream fileStream(filePath);
   if (fileStream.is_open()) {
