@@ -47,10 +47,14 @@ enum CPUStates {
 };
 std::vector<std::string> CpuUtilization();
 std::vector<std::string> CpuUtilization(int pid);
-long Jiffies();
-long ActiveJiffies();
-long ActiveJiffies(int pid);
-long IdleJiffies();
+
+// NOTE: YL 20201220 I don't think implementing these following functions is
+// efficient/necessary in my current solution, so I removed these four
+// functions:
+// 1) long Jiffies()
+// 2) long ActiveJiffies(int pid)
+// 3) long ActiveJiffies()
+// 4) long IdleJiffies()
 
 // Processes
 std::string processBaseFilePath(int pid);

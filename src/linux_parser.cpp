@@ -122,18 +122,13 @@ long LinuxParser::UpTime() {
   return uptimeSeconds;
 }
 
-// TODO: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies() { return 0; }
-
-// TODO: Read and return the number of active jiffies for a PID
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid [[maybe_unused]]) { return 0; }
-
-// TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() { return 0; }
-
-// TODO: Read and return the number of idle jiffies for the system
-long LinuxParser::IdleJiffies() { return 0; }
+// NOTE: YL 20201220 I don't think implementing these following functions is
+// efficient/necessary in my current solution, so I removed these four
+// functions:
+// 1) long LinuxParser::Jiffies()
+// 2) long LinuxParser::ActiveJiffies(int pid)
+// 3) long LinuxParser::ActiveJiffies()
+// 4) long LinuxParser::IdleJiffies()
 
 vector<string> LinuxParser::CpuUtilization() {
   vector<string> retVec;
@@ -246,8 +241,6 @@ string LinuxParser::Command(int pid) {
   return line;
 }
 
-// TODO: Read and return the memory used by a process - double check after
-// sorting
 string LinuxParser::Ram(int pid) {
   string line, key;
   int value{0};
@@ -316,7 +309,6 @@ string LinuxParser::User(int pid) {
   return userName;
 }
 
-// TODO: Read and return the uptime of a process - double check after sorting
 long LinuxParser::UpTime(int pid) {
   long upTimeValue{0};
   string line;
